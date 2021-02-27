@@ -18,7 +18,7 @@ projectName=$(requireValue "Introduce the project name");
 
 echo -e ;
 
-domainsAltNames=$(requireValue "Introduce the domain names (alt_names,for example: *.local), separated with ','")
+domainsAltNames=$(requireValue "Introduce the domain names (alt_names,for example: *.local), separated with ',' ")
 
 echo -e ;
 
@@ -31,12 +31,11 @@ v3CertificateContent=$(
 		"[alt_names]"\
 )
 index=0;
-for i in $(echo $domainsAltNames | tr ";" "\n")
+for i in $(echo $domainsAltNames | tr "," "\n")
 do
 	index=$((index+1))
 	v3CertificateContent="$v3CertificateContent\nDNS.$index = $i"  
 done
-
 
 
 ## -----------------
@@ -60,12 +59,16 @@ echo -e;
 # Create project dir and paths
 mkdir  $projectName;
 cd $projectName;
+projectPath=$(pwd);
 
 mkdir  ca;
-caPath=$(pwd)/ca;
+caPath=$projectPath/ca;
 
-mkdir  certificates;
-certificatePath=$(pwd)/ca;
+mkdir  certs;
+certificatesPath=$projectPath/certs;
+
+mkdir resume;
+resumePath=$projectPath/resume;
 
 
 # CA variables
@@ -81,15 +84,14 @@ certCSRKeyFileName="$projectName"CSR.key;
 
 
 # Generate the certification authority
-cd ca;
+cd $caPath;
 openssl genrsa -out $caKeyFileName 3072
 openssl req -new -key $caKeyFileName -subj "/C=$firstPorjectLetters/ST=$projectName/L=$projectName/O=$projectName/CN=$projectName" -x509 -days 365 -out $caPemFileName
 cd ..;
 
 
 # Generate the server cert
-pwd;
-cd certificates;
+cd $certificatesPath;
 openssl req -new -nodes -out $certCSRFileName -newkey rsa:2048 -keyout $certCSRKeyFileName -subj "/C=$firstPorjectLetters/ST=$projectName/L=$projectName/O=$projectName/CN=$projectName" 
 
 
@@ -97,11 +99,24 @@ openssl req -new -nodes -out $certCSRFileName -newkey rsa:2048 -keyout $certCSRK
 echo -e $v3CertificateContent > v3.ext;
 openssl x509 -req -in $certCSRFileName -CA $caPath/$caPemFileName -CAkey $caPath/$caKeyFileName -CAcreateserial -out $certCRTFileName -days 365 -sha256 -extfile v3.ext
 
-echo -e "\n\nCongratulations !!!";
-echo -e "You have generated the certificates correctly, you can find them in the following paths:\n";
+# Copy the important files into the resume directory (the ca.pem file and the server certificate)
+cp $caPath/$caPemFileName $resumePath/$caPemFileName
+cp $certificatesPath/$certCRTFileName $resumePath/$certCRTFileName 
+
+echo -e "\n\nCongratulations !!!\n";
+
+cat v3.ext;
+
+echo -e "\nYou have generated the certificates correctly, you can find them in the following paths:\n";
 echo -e "Certification Authority: $caPath \n"
-echo -e "Server Certificate: $certificatePath \n"
+echo -e "Server Certificate: $certificatesPath \n\n"
 
 echo -e "Usage:"
-echo -e "import the file \"$caPath/$caPemFileName\" in your system (os,browser...) as a certification authority"
-echo -e "Use the certification server file on your app: \"$certificatePath/$certCRTFileName\""
+echo -e "- Import the file \"$caPath/$caPemFileName\" in your system (os,browser...) as a certification authority"
+echo -e "- Use the certification server file on your app: \"$certificatesPath/$certCRTFileName\""
+echo -e "";
+
+if [ -x "$(command -v git)" ]; then
+  nautilus $resumePath
+  exit 1
+fi
