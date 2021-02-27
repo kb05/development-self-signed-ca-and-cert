@@ -116,7 +116,7 @@ echo -e "- Import the file \"$caPath/$caPemFileName\" in your system (os,browser
 echo -e "- Use the certification server file on your app: \"$certificatesPath/$certCRTFileName\""
 echo -e "";
 
-if [ -x "$(command -v git)" ]; then
+if [ -x "$(command -v nautilus)" ]; then
   nautilus $resumePath
   exit 1
 fi

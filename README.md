@@ -9,9 +9,8 @@ that allows you to generate a certificate authority and a certificate to work in
 
 1. The script request a name (the project name).
 2. The script request a list of domains to sign (separated with ','), for example: acme.local, api.acme.local, *.acme.local
-3. Create a certification authority using the project name
-4. Create a server certificate using the project name (the same name)
-5. The script Sign the server certificate usign the ca authority.
+3. The script will be create a certification authority and a server certificate using the project name, after that, will be sign the server certificate usign the ca authority.
+5. The script will be open a new window in the location of the generated files.
 6. Import the generate caCert.pem in your os or browser.
 7. Use the generated .cert in your app (nginx,apache ...).
 
