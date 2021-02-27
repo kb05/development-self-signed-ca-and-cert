@@ -15,5 +15,5 @@ that allows you to generate a certificate authority and a certificate to work in
 
 
 <p align="center">
-    <img src="https://github.com/kb05/development-self-signed-ca-and-cert/main/images/development-self-signed-ca-and-cert.gif" width="560" height="280">
-</p>
+  <img src="https://raw.githubusercontent.com/kb05/development-self-signed-ca-and-cert/main/images/project.gif" width="560" height="280">
+</p></p>
